@@ -22,3 +22,7 @@ hansard_words <- hansards %>%
   select(doc_id, page, text) %>%
   unnest_tokens(word, text) %>%
   mutate(page_uid = paste(doc_id, page))
+
+page_count_by_hansard <- hansards %>%
+  group_by(doc_id) %>%
+  summarize(page_count = n())
