@@ -1,0 +1,1 @@
+for a in data/source/parl.canadiana.ca/*.pdf; do pdftotext -layout $a; done
