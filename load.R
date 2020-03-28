@@ -26,3 +26,5 @@ hansard_words <- hansards %>%
 page_count_by_hansard <- hansards %>%
   group_by(doc_id) %>%
   summarize(page_count = n())
+
+hansard_volume_details <- read_csv("data/indices/volume-details.csv")

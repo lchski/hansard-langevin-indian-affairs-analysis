@@ -42,9 +42,13 @@ li_mention_page_count_by_doc <- page_count_by_hansard %>%
               group_by(doc_id) %>%
               summarize(mention_count = n())) %>%
   mutate(mention_count = replace_na(mention_count, 0)) %>%
-  mutate(mention_count_prop = mention_count / page_count)
+  mutate(mention_count_prop = mention_count / page_count) %>%
+  left_join(hansard_volume_details)
+
+li_mention_page_count_by_doc %>% left_join(hansard_volume_details)
 
 ## plot!
+### by filename
 li_mention_page_count_by_doc %>%
   ggplot(aes(x = doc_id, y = mention_count)) +
   geom_col() +
@@ -52,6 +56,12 @@ li_mention_page_count_by_doc %>%
 
 li_mention_page_count_by_doc %>%
   ggplot(aes(x = doc_id, y = mention_count_prop)) +
+  geom_col() +
+  theme(axis.text.x=element_text(angle=67.5, hjust=1))
+
+### by date
+li_mention_page_count_by_doc %>%
+  ggplot(aes(x = start_date, y = mention_count_prop)) +
   geom_col() +
   theme(axis.text.x=element_text(angle=67.5, hjust=1))
   
