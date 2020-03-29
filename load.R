@@ -47,6 +47,11 @@ hansard_volume_details <- read_csv(
     frontmatter_start, frontmatter_end,
     debates_start, debates_end,
     index_start, index_end
+  ) %>%
+  mutate(
+    frontmatter_page_count = frontmatter_end - frontmatter_start + 1,
+    debates_page_count = debates_end - debates_start + 1,
+    index_page_count = index_end - index_start + 1
   )
 
 identify_section_for_page <- function(doc_id_to_check, page_number_to_lookup) {
