@@ -124,3 +124,16 @@ li_mention_page_count_by_doc_section %>%
 hansards %>%
   filter(str_detect(text, regex("Langevin", ignore_case = TRUE))) %>%
   filter(str_detect(text, regex("Indian", ignore_case = TRUE)))
+
+
+## output for easier reading
+pages_mentioning_langevin_and_indian %>%
+  filter(page_section == "debates") %>%
+  filter(parliament == 1) %>%
+  write_csv("data/out/li-pages-debates-parl-1.csv")
+
+pages_mentioning_langevin_and_indian %>%
+  filter(page_section == "debates") %>%
+  write_csv("data/out/li-pages-debates.csv")
+
+
