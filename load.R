@@ -27,4 +27,24 @@ page_count_by_hansard <- hansards %>%
   group_by(doc_id) %>%
   summarize(page_count = n())
 
-hansard_volume_details <- read_csv("data/indices/volume-details.csv")
+hansard_volume_details <- read_csv(
+    "data/indices/volume-details.csv",
+    col_types = cols(
+      doc_id = col_character(),
+      start_date = col_date(format = ""),
+      end_date = col_date(format = ""),
+      debates_start = col_double(),
+      index_start = col_double(),
+      is_bilingual = col_logical()
+    )
+  ) %>%
+  mutate(frontmatter_start = 1, frontmatter_end = debates_start - 1) %>%
+  mutate(debates_end = index_start - 1) %>%
+  left_join(page_count_by_hansard %>% rename(index_end = page_count)) %>%
+  select(
+    doc_id:end_date,
+    is_bilingual,
+    frontmatter_start, frontmatter_end,
+    debates_start, debates_end,
+    index_start, index_end
+  )
