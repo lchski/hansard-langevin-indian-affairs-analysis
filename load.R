@@ -48,3 +48,24 @@ hansard_volume_details <- read_csv(
     debates_start, debates_end,
     index_start, index_end
   )
+
+identify_section_for_page <- function(doc_id_to_check, page_number_to_lookup) {
+  hansard_volume <- hansard_volume_details %>%
+    filter(doc_id == doc_id_to_check) %>%
+    slice(1)
+  
+  section <- case_when(
+    pull(hansard_volume, frontmatter_start) <= page_number_to_lookup & page_number_to_lookup <= pull(hansard_volume, frontmatter_end) ~ "frontmatter",
+    pull(hansard_volume, debates_start) <= page_number_to_lookup & page_number_to_lookup <= pull(hansard_volume, debates_end) ~ "debates",
+    pull(hansard_volume, index_start) <= page_number_to_lookup & page_number_to_lookup <= pull(hansard_volume, index_end) ~ "index",
+    TRUE ~ NA_character_
+  )
+  
+  return(section)
+}
+
+hansards <- hansards %>%
+  mutate(
+    page_section = map2_chr(doc_id, page, identify_section_for_page)
+  )
+
