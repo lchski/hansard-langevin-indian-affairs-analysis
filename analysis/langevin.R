@@ -133,6 +133,9 @@ pages_mentioning_li_expanded_uids <- pages_mentioning_langevin_and_indian %>%
 hansards %>%
   filter(uid %in% pages_mentioning_li_expanded_uids) %>%
   mutate(directly_mentions = uid %in% pages_mentioning_li_uids) %>%
-  count_group(parliament)
+  left_join(hansard_volume_details %>% select(doc_id, end_date)) %>%
+  filter(end_date < "1870-01-01") %>%
+  select(doc_id, page, directly_mentions, text, uid, page_section) %>%
+  write_csv("data/out/li-pages-exp-debates-sgia.csv")
 
 
