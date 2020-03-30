@@ -132,10 +132,66 @@ pages_mentioning_li_expanded_uids <- pages_mentioning_langevin_and_indian %>%
 
 hansards %>%
   filter(uid %in% pages_mentioning_li_expanded_uids) %>%
-  mutate(directly_mentions = uid %in% pages_mentioning_li_uids) %>%
+  mutate(
+    directly_mentions_li = uid %in% pages_mentioning_li_uids,
+    directly_mentions_l  = uid %in% langevin_mention_page_uids,
+    directly_mentions_i  = uid %in% indian_mention_page_uids
+  ) %>%
   left_join(hansard_volume_details %>% select(doc_id, end_date)) %>%
   filter(end_date < "1870-01-01") %>%
-  select(doc_id, page, directly_mentions, text, uid, page_section) %>%
+  select(doc_id, page, directly_mentions_li:directly_mentions_i, text, uid, page_section) %>%
   write_csv("data/out/li-pages-exp-debates-sgia.csv")
+
+
+
+
+
+
+
+langevin_key_dates <- read_csv("data/indices/langevin-key-dates.csv") %>%
+  mutate(grouping = factor(grouping, unique(grouping), ordered = TRUE)) %>%
+  pivot_longer(start:end, names_to = "state", values_to = "date")
+  
+langevin_key_dates %>%
+  ggplot(aes(x = date, y = grouping, group = grouping)) +
+  geom_line(size = 2) +
+  geom_text(aes(label = description))
+
+langevin_key_dates %>%
+  ggplot() +
+  geom_line(
+    data = langevin_key_dates %>%
+      filter(grouping == "parliament"),
+    mapping = aes(x = date, y = grouping),
+    size = 2,
+    alpha = 0.1
+  ) +
+  geom_text(
+    data = langevin_key_dates %>%
+      filter(grouping == "parliament") %>%
+      filter(state == "start"),
+    mapping = aes(x = date, y = grouping, label = description)
+  ) +
+  geom_line(
+    data = langevin_key_dates %>%
+      filter(grouping == "prime minister"),
+    mapping = aes(x = date, y = grouping),
+    size = 2,
+    alpha = 0.1
+  ) +
+  geom_text(
+    data = langevin_key_dates %>%
+      filter(grouping == "prime minister") %>%
+      filter(state == "start"),
+    mapping = aes(x = date, y = grouping, label = description),
+    angle = -45,
+    nudge_y = -0.5
+  ) +
+  geom_point(
+    data = langevin_key_dates %>%
+      filter(grouping == "prime minister") %>%
+      filter(state == "start"),
+    mapping = aes(x = date, y = grouping, label = description)
+  )
 
 
