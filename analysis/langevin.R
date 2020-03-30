@@ -1,18 +1,29 @@
 library(gridExtra)
 
-## find words
-words_similar_to_langevin <- hansard_words %>%
-  find_similar_words("langevin", 0.75)
+## NB uncomment all the following to update
 
-words_similar_to_indian <- hansard_words %>%
-  find_similar_words("indian", 0.85)
+## find words
+#words_similar_to_langevin <- hansard_words %>%
+#  find_similar_words("langevin", 0.75)
+#tibble(word = words_similar_to_langevin) %>% write_csv("data/out/words_similar_to_langevin.csv")
+words_similar_to_langevin <- read_csv("data/out/words_similar_to_langevin.csv") %>% pull(word)
+
+#words_similar_to_indian <- hansard_words %>%
+#  find_similar_words("indian", 0.85)
+#tibble(word = words_similar_to_indian) %>% write_csv("data/out/words_similar_to_indian.csv")
+words_similar_to_indian <- read_csv("data/out/words_similar_to_indian.csv") %>% pull(word)
 
 ## find page UIDs
-langevin_mention_page_uids <- hansard_words %>%
-  find_page_uids_mentioning_words(words_similar_to_langevin)
+#langevin_mention_page_uids <- hansard_words %>%
+#  find_page_uids_mentioning_words(words_similar_to_langevin)
+#tibble(uid = langevin_mention_page_uids) %>% write_csv("data/out/langevin_mention_page_uids.csv")
+langevin_mention_page_uids <- read_csv("data/out/langevin_mention_page_uids.csv") %>% pull(uid)
 
-indian_mention_page_uids <- hansard_words %>%
-  find_page_uids_mentioning_words(words_similar_to_indian)
+#indian_mention_page_uids <- hansard_words %>%
+#  find_page_uids_mentioning_words(words_similar_to_indian)
+#tibble(uid = indian_mention_page_uids) %>% write_csv("data/out/indian_mention_page_uids.csv")
+indian_mention_page_uids <- read_csv("data/out/indian_mention_page_uids.csv") %>% pull(uid)
+
 
 ## find the pages
 pages_mentioning_langevin_and_indian <- hansards %>%

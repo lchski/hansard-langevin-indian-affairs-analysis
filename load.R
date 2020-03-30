@@ -71,10 +71,15 @@ identify_section_for_page <- function(doc_id_to_check, page_number_to_lookup) {
   return(section)
 }
 
+## NB: uncomment to update page sections; saved file has parliaments 1 through 7
+#hansards <- hansards %>%
+#  mutate(
+#    page_section = map2_chr(doc_id, page, identify_section_for_page)
+#  )
+#hansards %>% select(uid, page_section) %>% write_csv("data/out/uids_tagged_with_section.csv.gz")
+
 hansards <- hansards %>%
-  mutate(
-    page_section = map2_chr(doc_id, page, identify_section_for_page)
-  )
+  left_join(read_csv("data/out/uids_tagged_with_section.csv.gz"))
 
 find_similar_words <- function(words_to_search, search_word, threshold) {
   words_to_search %>%
