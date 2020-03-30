@@ -6,18 +6,20 @@ parliament,4,1879-02-13,1882-05-18
 parliament,3,1874-03-26,1878-08-17
 parliament,2,1873-03-05,1874-01-02
 parliament,1,1867-11-06,1872-07-08
-prime minister,SJAM,1867-07-01,1873-11-05
-prime minister,Alexander Mackenzie,1873-11-07,1878-10-08
-prime minister,SJAM,1878-10-17,1891-06-06
-prime minister,John Abbott,1891-06-16,1892-11-24
-prime minister,John Sparrow David Thompson,1892-12-05,1894-12-12
-prime minister,Mackenzie Bowell,1894-12-21,1896-04-27
-prime minister,Charles Tupper,1896-05-01,1896-07-08
+prime minister,Macdonald,1867-07-01,1873-11-05
+prime minister,Mackenzie,1873-11-07,1878-10-08
+prime minister,Macdonald,1878-10-17,1891-06-06
+prime minister,Abbott,1891-06-16,1892-11-24
+prime minister,Thompson,1892-12-05,1894-12-12
+prime minister,Bowell,1894-12-21,1896-04-27
+prime minister,Tupper,1896-05-01,1896-07-08
 governing party,Conservative,1867-07-01,1873-11-05
 governing party,Liberal,1873-11-07,1878-10-08
 governing party,Conservative,1878-10-17,1896-07-08
 MP,Dorchester,1867-09-20,1874-01-21
+MP,,1874-01-22,1876-01-21
 MP,Charlevoix,1876-01-22,1876-11-05
+MP,,1876-11-06,1877-03-22
 MP,Charlevoix,1877-03-23,1878-08-17
 MP,Three Rivers,1878-11-21,1896-06-22
 cabinet,Secretary of State of Canada,1867-07-01,1869-12-07

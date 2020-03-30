@@ -174,24 +174,32 @@ langevin_key_dates %>%
   ) +
   geom_line(
     data = langevin_key_dates %>%
-      filter(grouping == "prime minister"),
-    mapping = aes(x = date, y = grouping),
+      filter(grouping == "governing party"),
+    mapping = aes(x = date, y = "prime minister", color = description),
     size = 2,
-    alpha = 0.1
+    alpha = 0.25,
+    show.legend = FALSE
   ) +
+  scale_color_manual(values = c("blue", "red"), name="description") +
   geom_text(
     data = langevin_key_dates %>%
       filter(grouping == "prime minister") %>%
       filter(state == "start"),
     mapping = aes(x = date, y = grouping, label = description),
-    angle = -45,
-    nudge_y = -0.5
+    angle = -30,
+    nudge_y = -0.375,
+    vjust = -4
   ) +
   geom_point(
     data = langevin_key_dates %>%
       filter(grouping == "prime minister") %>%
       filter(state == "start"),
-    mapping = aes(x = date, y = grouping, label = description)
+    mapping = aes(x = date, y = grouping)
+  ) +
+  geom_line(
+    data = langevin_key_dates %>%
+      filter(grouping == "MP"),
+    mapping = aes(x = date, y = grouping)
   )
 
 
