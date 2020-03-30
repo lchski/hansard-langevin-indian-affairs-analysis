@@ -2,6 +2,8 @@ library(tidyverse)
 library(tidytext)
 library(readtext)
 
+library(stringdist)
+
 library(helpers)
 
 hansards <- readtext(
@@ -74,3 +76,18 @@ hansards <- hansards %>%
     page_section = map2_chr(doc_id, page, identify_section_for_page)
   )
 
+find_similar_words <- function(words_to_search, search_word, threshold) {
+  words_to_search %>%
+    mutate(search_word_dist = stringsim(word, search_word)) %>%
+    filter(search_word_dist >= threshold) %>%
+    distinct(word) %>%
+    pull(word)
+}
+
+find_page_uids_mentioning_words <- function(words_by_page, words_to_search) {
+  words_by_page %>%
+    filter(word %in% words_to_search) %>%
+    select(page_uid) %>%
+    distinct() %>%
+    pull(page_uid)
+}

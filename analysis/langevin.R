@@ -1,21 +1,4 @@
-library(stringdist)
 library(gridExtra)
-
-find_similar_words <- function(words_to_search, search_word, threshold) {
-  words_to_search %>%
-    mutate(search_word_dist = stringsim(word, search_word)) %>%
-    filter(search_word_dist >= threshold) %>%
-    distinct(word) %>%
-    pull(word)
-}
-
-find_page_uids_mentioning_words <- function(words_by_page, words_to_search) {
-  words_by_page %>%
-    filter(word %in% words_to_search) %>%
-    select(page_uid) %>%
-    distinct() %>%
-    pull(page_uid)
-}
 
 ## find words
 words_similar_to_langevin <- hansard_words %>%
@@ -129,11 +112,27 @@ hansards %>%
 ## output for easier reading
 pages_mentioning_langevin_and_indian %>%
   filter(page_section == "debates") %>%
-  filter(parliament == 1) %>%
-  write_csv("data/out/li-pages-debates-parl-1.csv")
+  write_csv("data/out/li-pages-debates.csv")
 
 pages_mentioning_langevin_and_indian %>%
   filter(page_section == "debates") %>%
-  write_csv("data/out/li-pages-debates.csv")
+  filter(parliament == 1) %>%
+  write_csv("data/out/li-pages-debates-parl-1.csv")
+
+
+
+pages_mentioning_li_expanded_uids <- pages_mentioning_langevin_and_indian %>%
+  filter(page_section == "debates") %>%
+  select(doc_id, page) %>%
+  mutate(page = map(page, ~ c(.x - 1, .x, .x + 1))) %>% ## get page before and after each identified page
+  unnest(page) %>%
+  distinct() %>%
+  mutate(uid = paste(doc_id, page)) %>%
+  pull(uid)
+
+hansards %>%
+  filter(uid %in% pages_mentioning_li_expanded_uids) %>%
+  mutate(directly_mentions = uid %in% pages_mentioning_li_uids) %>%
+  count_group(parliament)
 
 
