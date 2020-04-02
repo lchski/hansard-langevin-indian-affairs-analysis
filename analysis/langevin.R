@@ -158,7 +158,7 @@ hansards %>%
 
 
 
-
+## toying with a gantt style chart for key dates, but eh
 langevin_key_dates <- read_csv("data/indices/langevin-key-dates.csv") %>%
   mutate(grouping = factor(grouping, unique(grouping), ordered = TRUE)) %>%
   pivot_longer(start:end, names_to = "state", values_to = "date")
