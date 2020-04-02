@@ -40,6 +40,7 @@ hansard_volume_details <- read_csv(
       is_bilingual = col_logical()
     )
   ) %>%
+  separate(doc_id, c("parliament", "session", "volume"), remove = FALSE, convert = TRUE, extra = "drop") %>%
   mutate(frontmatter_start = 1, frontmatter_end = debates_start - 1) %>%
   mutate(debates_end = index_start - 1) %>%
   left_join(page_count_by_hansard %>% rename(index_end = page_count)) %>%

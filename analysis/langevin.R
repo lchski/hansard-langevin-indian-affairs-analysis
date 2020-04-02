@@ -14,21 +14,28 @@ words_similar_to_langevin <- read_csv("data/out/words_similar_to_langevin.csv") 
 words_similar_to_indian <- read_csv("data/out/words_similar_to_indian.csv") %>% pull(word)
 
 ## find page UIDs
-#langevin_mention_page_uids <- hansard_words %>%
+#pages_mentioning_langevin_uids <- hansard_words %>%
 #  find_page_uids_mentioning_words(words_similar_to_langevin)
-#tibble(uid = langevin_mention_page_uids) %>% write_csv("data/out/langevin_mention_page_uids.csv")
-langevin_mention_page_uids <- read_csv("data/out/langevin_mention_page_uids.csv") %>% pull(uid)
+#tibble(uid = pages_mentioning_langevin_uids) %>% write_csv("data/out/langevin_mention_page_uids.csv")
+pages_mentioning_langevin_uids <- read_csv("data/out/langevin_mention_page_uids.csv") %>% pull(uid)
 
-#indian_mention_page_uids <- hansard_words %>%
+#pages_mentioning_indian_uids <- hansard_words %>%
 #  find_page_uids_mentioning_words(words_similar_to_indian)
-#tibble(uid = indian_mention_page_uids) %>% write_csv("data/out/indian_mention_page_uids.csv")
-indian_mention_page_uids <- read_csv("data/out/indian_mention_page_uids.csv") %>% pull(uid)
+#tibble(uid = pages_mentioning_indian_uids) %>% write_csv("data/out/indian_mention_page_uids.csv")
+pages_mentioning_indian_uids <- read_csv("data/out/indian_mention_page_uids.csv") %>% pull(uid)
 
 
 ## find the pages
+pages_mentioning_langevin <- hansards %>%
+  filter(uid %in% pages_mentioning_langevin_uids)
+
+pages_mentioning_indian <- hansards %>%
+  filter(uid %in% pages_mentioning_indian_uids)
+
+
 pages_mentioning_langevin_and_indian <- hansards %>%
-  filter(uid %in% langevin_mention_page_uids) %>%
-  filter(uid %in% indian_mention_page_uids)
+  filter(uid %in% pages_mentioning_langevin_uids) %>%
+  filter(uid %in% pages_mentioning_indian_uids)
 
 pages_mentioning_li_uids <- pages_mentioning_langevin_and_indian %>%
   pull(uid)
@@ -52,7 +59,7 @@ li_mention_page_count_by_doc_section <- hansard_volume_details %>%
     values_to = "page_count"
   ) %>%
   mutate(section = str_remove(section, "_page_count")) %>%
-  select(doc_id, start_date, end_date, section, page_count) %>%
+  select(doc_id:volume, start_date, end_date, section, page_count) %>%
   ungroup() %>%
   left_join(
     pages_mentioning_langevin_and_indian %>%
@@ -63,6 +70,24 @@ li_mention_page_count_by_doc_section <- hansard_volume_details %>%
   group_by(doc_id, section) %>%
   mutate(mention_count = replace_na(mention_count, 0)) %>%
   mutate(mention_count_prop = mention_count / page_count)
+
+### regroup by parliament/session
+li_mentions_by_parlsess_section <- li_mention_page_count_by_doc_section %>%
+  ungroup() %>%
+  group_by(parliament, session, section) %>%
+  summarize(
+    n_vols = n_distinct(volume),
+    start_date = min(start_date),
+    end_date = max(end_date),
+    page_count = sum(page_count),
+    mention_count = sum(mention_count)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    mention_count_prop = mention_count / page_count,
+    parliament_session_id = paste(parliament, session, sep = "-")
+  ) %>%
+  select(parliament_session_id, everything())
   
 
 
@@ -111,6 +136,19 @@ li_mention_page_count_by_doc_section %>%
   ggplot(aes(x = start_date, y = mention_count_prop, fill = section)) +
   geom_col() +
   theme(axis.text.x=element_text(angle=67.5, hjust=1))
+
+
+
+li_mentions_by_parlsess_section %>%
+  ggplot(aes(x = parliament_session_id, y = mention_count_prop, fill = section)) +
+  geom_col() +
+  theme(axis.text.x=element_text(angle=67.5, hjust=1))
+
+li_mentions_by_parlsess_section %>%
+  ggplot(aes(x = start_date, y = mention_count_prop, fill = section)) +
+  geom_col() +
+  theme(axis.text.x=element_text(angle=67.5, hjust=1)) +
+  facet_grid(rows = vars(section))
   
 
 
