@@ -31,7 +31,8 @@ hansards %>%
 #### break it down by section
 li_mention_page_count_by_doc_section %>%
   ggplot(aes(x = doc_id, y = mention_count_prop, fill = section)) +
-  geom_col()
+  geom_col() +
+  theme(axis.text.x=element_text(angle=67.5, hjust=1))
 
 li_mention_page_count_by_doc_section %>%
   filter(section == "debates") %>%
@@ -69,6 +70,47 @@ li_mentions_by_parlsess_section %>%
   geom_col() +
   theme(axis.text.x=element_text(angle=67.5, hjust=1)) +
   facet_grid(rows = vars(section))
+
+pages_mentioning_indian %>%
+  count_occurences_by_section() %>%
+  regroup_section_occurences_by_parlsess() %>%
+  ggplot(aes(x = start_date, y = mention_count_prop, fill = section)) +
+  geom_col() +
+  theme(axis.text.x=element_text(angle=67.5, hjust=1)) +
+  facet_grid(rows = vars(section))
+
+bind_rows(list(
+  "langevin & indian" = pages_mentioning_langevin_and_indian %>%
+    count_occurences_by_section() %>%
+    regroup_section_occurences_by_parlsess(),
+  "langevin" = pages_mentioning_langevin %>%
+    count_occurences_by_section() %>%
+    regroup_section_occurences_by_parlsess(),
+  "indian" = pages_mentioning_indian %>%
+    count_occurences_by_section() %>%
+    regroup_section_occurences_by_parlsess()
+), .id = "occurence_group") %>%
+  ggplot(aes(x = parliament_session_id, y = mention_count_prop, fill = section)) +
+  geom_col() +
+  theme(axis.text.x=element_text(angle=67.5, hjust=1)) +
+  facet_grid(rows = vars(section), cols = vars(occurence_group))
+
+bind_rows(list(
+  "langevin & indian" = pages_mentioning_langevin_and_indian %>%
+    count_occurences_by_section() %>%
+    regroup_section_occurences_by_parlsess(),
+  "langevin" = pages_mentioning_langevin %>%
+    count_occurences_by_section() %>%
+    regroup_section_occurences_by_parlsess(),
+  "indian" = pages_mentioning_indian %>%
+    count_occurences_by_section() %>%
+    regroup_section_occurences_by_parlsess()
+), .id = "occurence_group") %>%
+  filter(section == "debates") %>%
+  ggplot(aes(x = parliament_session_id, y = mention_count_prop, fill = section)) +
+  geom_col() +
+  theme(axis.text.x=element_text(angle=67.5, hjust=1)) +
+  facet_grid(rows = vars(occurence_group))
   
 
 
@@ -103,13 +145,25 @@ hansards %>%
   filter(uid %in% pages_mentioning_li_expanded_uids) %>%
   mutate(
     directly_mentions_li = uid %in% pages_mentioning_li_uids,
-    directly_mentions_l  = uid %in% langevin_mention_page_uids,
-    directly_mentions_i  = uid %in% indian_mention_page_uids
+    directly_mentions_l  = uid %in% pages_mentioning_langevin_uids,
+    directly_mentions_i  = uid %in% pages_mentioning_indian_uids
   ) %>%
   left_join(hansard_volume_details %>% select(doc_id, end_date)) %>%
   filter(end_date < "1870-01-01") %>%
   select(doc_id, page, directly_mentions_li:directly_mentions_i, text, uid, page_section) %>%
   write_csv("data/out/li-pages-exp-debates-sgia.csv")
+
+hansards %>%
+  filter(uid %in% pages_mentioning_li_expanded_uids) %>%
+  mutate(
+    directly_mentions_li = uid %in% pages_mentioning_li_uids,
+    directly_mentions_l  = uid %in% pages_mentioning_langevin_uids,
+    directly_mentions_i  = uid %in% pages_mentioning_indian_uids
+  ) %>%
+  left_join(hansard_volume_details %>% select(doc_id, end_date)) %>%
+  filter(parliament == 1) %>%
+  select(doc_id, page, directly_mentions_li:directly_mentions_i, text, uid, page_section) %>%
+  write_csv("data/out/li-pages-debates-parl-1.csv")
 
 
 
