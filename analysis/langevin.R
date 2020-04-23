@@ -154,17 +154,25 @@ hansards %>%
   write_csv("data/out/li-pages-exp-debates-sgia.csv")
 
 hansards %>%
-  filter(uid %in% pages_mentioning_li_expanded_uids) %>%
+  filter(uid %in% pages_mentioning_li_uids) %>%
+  filter(page_section == "debates") %>%
   mutate(
     directly_mentions_li = uid %in% pages_mentioning_li_uids,
     directly_mentions_l  = uid %in% pages_mentioning_langevin_uids,
     directly_mentions_i  = uid %in% pages_mentioning_indian_uids
   ) %>%
   left_join(hansard_volume_details %>% select(doc_id, end_date)) %>%
-  filter(parliament == 1) %>%
+  filter(parliament == 6) %>%
   select(doc_id, page, directly_mentions_li:directly_mentions_i, text, uid, page_section) %>%
-  write_csv("data/out/li-pages-debates-parl-1.csv")
+  write_csv("data/out/li-pages-debates-parl-6--li-only.csv")
 
+
+## handy regex for our search words
+paste0(
+  paste(words_similar_to_indian, collapse = '|'),
+  '|',
+  paste(words_similar_to_langevin, collapse = '|')
+)
 
 
 
