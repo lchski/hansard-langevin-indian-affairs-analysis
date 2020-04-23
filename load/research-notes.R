@@ -51,4 +51,17 @@ notes <- readtext(
       str_match(text, "^[0-9]*–?[0-9]* \\[[0-9]*–?[0-9]*\\], ([^:]*):")[,2],
       NA_character_
     )
-  )
+  ) %>%
+  fill(date, page_print_from, page_pdf_from, speaker) %>%
+  group_by(date, page_print_from, page_pdf_from, speaker) %>%
+  fill(page_print_to, page_pdf_to) %>%
+  ungroup() %>%
+  mutate_at(
+    c("page_print_from", "page_pdf_from"),
+    ~ if_else(type == "date", NA_integer_, .)
+  ) %>%
+  mutate_at(
+    c("speaker"),
+    ~ if_else(type == "date", NA_character_, .)
+  ) %>%
+  select(doc_id:volume, type:speaker, text)
