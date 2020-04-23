@@ -1,4 +1,4 @@
-
+library(lubridate)
 
 notes <- readtext(
   "data/source/research-notes/*.txt",
@@ -17,6 +17,38 @@ notes <- readtext(
       TRUE ~ NA_character_
     )
   ) %>%
-  filter(! is.na(type))
-
-
+  filter(! is.na(type)) %>%
+  mutate(
+    date = if_else(
+      type == "date",
+      as_date(str_remove(text, "[^0-9]*")),
+      as_date(NA_character_)
+    )
+  ) %>%
+  mutate(
+    page_print_from = if_else(
+      type == "reference",
+      as.integer(str_match(text, "^([0-9]*)")[,2]),
+      NA_integer_
+    ),
+    page_print_to = if_else(
+      type == "reference",
+      as.integer(str_match(text, "^[0-9]*–([0-9]*)")[,2]),
+      NA_integer_
+    ),
+    page_pdf_from = if_else(
+      type == "reference",
+      as.integer(str_match(text, "^[0-9]*–?[0-9]* \\[([0-9]*)")[,2]),
+      NA_integer_
+    ),
+    page_pdf_to = if_else(
+      type == "reference",
+      as.integer(str_match(text, "^[0-9]*–[0-9]* \\[[0-9]*–([0-9]*)")[,2]),
+      NA_integer_
+    ),
+    speaker = if_else(
+      type == "reference",
+      str_match(text, "^[0-9]*–?[0-9]* \\[[0-9]*–?[0-9]*\\], ([^:]*):")[,2],
+      NA_character_
+    )
+  )
