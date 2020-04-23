@@ -65,3 +65,6 @@ notes <- readtext(
     ~ if_else(type == "date", NA_character_, .)
   ) %>%
   select(doc_id:volume, type:speaker, text)
+
+notes %>%
+  write_csv("data/out/research-notes.csv")
