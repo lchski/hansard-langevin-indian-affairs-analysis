@@ -64,7 +64,23 @@ notes <- readtext(
     c("speaker"),
     ~ if_else(type == "date", NA_character_, .)
   ) %>%
-  select(doc_id:volume, type:speaker, text)
+  separate(text, into = c("texta", "textb"), remove = FALSE, sep = ":") %>%
+  mutate(text = ifelse(type == "reference", textb, text)) %>%
+  mutate(text = trimws(text)) %>%
+  select(doc_id:volume, type:speaker, text) %>%
+  mutate(citation = paste0(
+    "Canada, Parliament, House of Commons Debates, ",
+    scales::ordinal(parliament),
+    " Parl, ",
+    scales::ordinal(session),
+    " Sess, Vol ",
+    volume,
+    " (",
+    trimws(format(date, "%e %B %Y")),
+    ") at ",
+    page_print_from
+  ))
 
 notes %>%
+  select(-parliament, -session, -volume) %>%
   write_csv("data/out/research-notes.csv")
